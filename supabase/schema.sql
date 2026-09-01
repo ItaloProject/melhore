@@ -400,3 +400,6 @@ begin
   end loop;
 end;
 $$;
+
+-- Platform console (billing, activation, backup): see
+-- supabase/migrations/20260901210000_platform_console.sql

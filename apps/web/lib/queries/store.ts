@@ -1,14 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
 import { getSessionUser } from '@/lib/auth/session'
+import { getViewStoreId, isPlatformAdmin, storeAccess } from '@/lib/auth/platform'
 import { redirect } from 'next/navigation'
 
-export async function requireStore() {
+export async function requireStore(opts?: { allowLocked?: boolean }) {
   const user = await getSessionUser()
   if (!user) redirect('/login')
 
+  const platform = await isPlatformAdmin(user)
+  const viewId = platform ? getViewStoreId() : null
+  if (viewId) {
+    return { user, storeId: viewId, role: 'owner', impersonating: true as const }
+  }
+
   let storeUser: { store_id: string; role: string } | null = null
+  const supabase = createClient()
   try {
-    const supabase = createClient()
     const { data } = await supabase
       .from('store_users')
       .select('store_id, role')
@@ -19,9 +26,29 @@ export async function requireStore() {
     storeUser = null
   }
 
-  if (!storeUser) redirect('/cadastro/telefone')
+  if (!storeUser) {
+    if (platform) redirect('/plataforma')
+    redirect('/cadastro/telefone')
+  }
 
-  return { user, storeId: storeUser.store_id as string, role: storeUser.role as string }
+  if (!opts?.allowLocked) {
+    const { data: store } = await supabase
+      .from('stores')
+      .select('account_status, billing_status, trial_ends_at, current_period_end, grace_until')
+      .eq('id', storeUser.store_id)
+      .maybeSingle()
+
+    if (store && storeAccess(store) === 'locked' && !platform) {
+      redirect('/admin/assinatura')
+    }
+  }
+
+  return {
+    user,
+    storeId: storeUser.store_id as string,
+    role: storeUser.role as string,
+    impersonating: false as const,
+  }
 }
 
 export async function getMyStoreContact() {

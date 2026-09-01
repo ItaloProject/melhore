@@ -34,13 +34,13 @@ function LoginForm() {
       return
     }
 
-    router.push('/admin')
+    router.push('/auth/continue')
     router.refresh()
   }
 
   return (
     <AuthShell title="Entre na sua conta" subtitle="Use o Google ou o e-mail da loja.">
-      <GoogleButton next="/admin" />
+      <GoogleButton next="/auth/continue" />
       <AuthDivider />
 
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -13,6 +13,7 @@ import {
   Store,
   ChevronDown,
   Bell,
+  Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -33,7 +34,7 @@ function Logo() {
   )
 }
 
-export function AdminSidebar() {
+export function AdminSidebar({ showPlatform = false }: { showPlatform?: boolean }) {
   const pathname = usePathname()
 
   return (
@@ -124,6 +125,15 @@ export function AdminSidebar() {
           </div>
         </div>
 
+        {showPlatform && (
+          <Link
+            href="/plataforma"
+            className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm text-brand-300 hover:bg-brand-600/15 w-full"
+          >
+            <Shield className="w-4 h-4" />
+            Plataforma
+          </Link>
+        )}
         <button className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 w-full transition-colors">
           <LogOut className="w-4 h-4" />
           Sair
