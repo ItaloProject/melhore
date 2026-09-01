@@ -13,7 +13,7 @@ export async function requireStore() {
     .eq('user_id', user.id)
     .single()
 
-  if (!storeUser) redirect('/login')
+  if (!storeUser) redirect('/cadastro/telefone')
 
   return { user, storeId: storeUser.store_id as string, role: storeUser.role as string }
 }

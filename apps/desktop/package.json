@@ -1,6 +1,6 @@
 {
   "name": "@melhore/desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Melhore Desktop — PDV e gestão",
   "author": "ItaloProject",
@@ -17,6 +17,9 @@
     "build:win": "node scripts/create-icon.js && electron-builder --win nsis --publish never",
     "release": "node scripts/create-icon.js && electron-builder --win nsis --publish always"
   },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
   "devDependencies": {
     "electron": "^32.3.3",
     "electron-builder": "^25.1.8"
@@ -30,6 +33,7 @@
     },
     "files": [
       "main.js",
+      "package.json",
       "assets/**/*"
     ],
     "win": {

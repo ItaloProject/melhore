@@ -19,10 +19,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Instalar dependências
-        run: npm install
+      - name: Instalar dependências do desktop
+        working-directory: apps/desktop
+        run: npm install --install-strategy=nested
 
       - name: Gerar ícone
         run: node apps/desktop/scripts/create-icon.js
@@ -36,7 +36,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: apps/desktop/release/*.exe
+          path: |
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.yml
+            apps/desktop/release/*.blockmap
 
   android:
     name: APK Android
@@ -72,7 +75,10 @@ jobs:
       - name: Renomear APK
         run: |
           mkdir -p dist
-          cp android/app/build/outputs/apk/debug/app-debug.apk dist/Melhore-1.0.0.apk
+          TAG="${GITHUB_REF_NAME}"
+          if [ "${{ github.ref_type }}" != "tag" ]; then TAG="v1.0.1"; fi
+          VER="${TAG#v}"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "dist/Melhore-${VER}.apk"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -91,15 +97,17 @@ jobs:
       - name: Publicar release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.0' }}
-          name: Melhore ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.0' }}
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.1' }}
+          name: Melhore ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.1' }}
           generate_release_notes: true
           fail_on_unmatched_files: false
           files: |
             windows-installer/*.exe
+            windows-installer/*.yml
+            windows-installer/*.blockmap
             android-apk/*.apk
           body: |
-            Primeira versão pública do Melhore.
+            Melhore ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.1' }}
 
-            - **Windows:** instalador NSIS 64-bit
-            - **Android:** APK para instalação direta
+            - **Windows:** instalador NSIS 64-bit com atualização automática
+            - **Android:** APK com atualização automática
