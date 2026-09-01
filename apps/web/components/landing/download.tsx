@@ -20,7 +20,7 @@ async function getLatestRelease(): Promise<GithubRelease | null> {
       'https://api.github.com/repos/ItaloProject/melhore/releases/latest',
       {
         headers: { Accept: 'application/vnd.github+json' },
-        next: { revalidate: 3600 },
+        next: { revalidate: 60 },
       }
     )
     if (!res.ok) return null

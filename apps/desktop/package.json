@@ -1,17 +1,21 @@
 {
   "name": "@melhore/desktop",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Melhore Desktop — loja de roupas",
+  "description": "Melhore Desktop — PDV e gestão",
   "author": "ItaloProject",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ItaloProject/melhore.git"
+  },
+  "homepage": "https://github.com/ItaloProject/melhore",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder",
-    "build:win": "electron-builder --win"
-  },
-  "dependencies": {
-    "electron-is-dev": "^3.0.1"
+    "icon": "node scripts/create-icon.js",
+    "build": "node scripts/create-icon.js && electron-builder --win nsis --publish never",
+    "build:win": "node scripts/create-icon.js && electron-builder --win nsis --publish never",
+    "release": "node scripts/create-icon.js && electron-builder --win nsis --publish always"
   },
   "devDependencies": {
     "electron": "^32.3.3",
@@ -21,20 +25,40 @@
     "appId": "com.melhore.desktop",
     "productName": "Melhore",
     "electronVersion": "32.3.3",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "assets/**/*"
+    ],
     "win": {
+      "icon": "assets/icon.ico",
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
-      ],
-      "icon": "assets/icon.ico"
+      ]
     },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "shortcutName": "Melhore",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "artifactName": "Melhore-Setup-${version}-${arch}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ItaloProject",
+      "repo": "melhore",
+      "releaseType": "release"
     }
   }
 }

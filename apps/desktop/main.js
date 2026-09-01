@@ -1,11 +1,10 @@
 const { app, BrowserWindow, Menu } = require('electron')
 const path = require('path')
-const isDev = require('electron-is-dev')
 
-// The web app URL — in production this is the Vercel URL
+const isDev = !app.isPackaged
 const WEB_URL = isDev
   ? 'http://localhost:3000'
-  : 'https://melhore.vercel.app'
+  : 'https://melhore-seven.vercel.app'
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -21,10 +20,8 @@ function createWindow() {
     },
   })
 
-  // Load the Next.js web app
   win.loadURL(`${WEB_URL}/admin`)
 
-  // Remove default menu in production
   if (!isDev) {
     Menu.setApplicationMenu(null)
   }
