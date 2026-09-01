@@ -12,9 +12,14 @@ export function GoogleButton({ next = '/cadastro/telefone' }: { next?: string })
   async function handleClick() {
     setLoading(true)
     setError('')
-    const message = await signInWithGoogle(next)
-    if (message) {
-      setError(message)
+    try {
+      const message = await signInWithGoogle(next)
+      if (message) {
+        setError(message)
+        setLoading(false)
+      }
+    } catch {
+      setError('Não foi possível conectar ao Google. Tente de novo ou use e-mail e senha.')
       setLoading(false)
     }
   }

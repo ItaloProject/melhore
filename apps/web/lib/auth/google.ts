@@ -8,13 +8,29 @@ export function getAuthRedirectUrl(path = '/auth/callback') {
   return `${base.replace(/\/$/, '')}${path}`
 }
 
-export async function signInWithGoogle(next = '/cadastro/telefone') {
-  const supabase = createClient()
+function googleErrorMessage(message: string) {
+  const lower = message.toLowerCase()
+  if (
+    lower.includes('provider is not enabled')
+    || lower.includes('unsupported provider')
+    || lower.includes('validation_failed')
+  ) {
+    return 'O login com Google ainda não está ativo. Use e-mail e senha.'
+  }
+  return message
+}
 
-  const { error } = await supabase.auth.signInWithOAuth({
+export async function signInWithGoogle(next = '/cadastro/telefone') {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return 'Login com Google não está configurado. Use e-mail e senha.'
+  }
+
+  const supabase = createClient()
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: `${getAuthRedirectUrl()}?next=${encodeURIComponent(next)}`,
+      skipBrowserRedirect: true,
       queryParams: {
         access_type: 'offline',
         prompt: 'select_account',
@@ -22,7 +38,11 @@ export async function signInWithGoogle(next = '/cadastro/telefone') {
     },
   })
 
-  return error?.message ?? null
+  if (error) return googleErrorMessage(error.message)
+  if (!data.url) return 'Não foi possível abrir o Google. Tente de novo.'
+
+  window.location.assign(data.url)
+  return null
 }
 
 export function onlyDigits(value: string) {
