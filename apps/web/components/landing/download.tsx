@@ -61,7 +61,7 @@ export async function DownloadSection() {
       badge: 'Recomendado',
       badgeColor: 'bg-brand-500/20 text-brand-300 border-brand-500/30',
       btnClass: 'bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-900/40',
-      btnText: 'Baixar .exe',
+      btnText: 'Baixar',
       soonText: 'Publicando em breve',
     },
     {
@@ -76,7 +76,7 @@ export async function DownloadSection() {
       badge: null,
       badgeColor: '',
       btnClass: 'bg-white/8 hover:bg-white/12 text-white border border-white/10',
-      btnText: 'Baixar APK',
+      btnText: 'Baixar',
       soonText: 'Em breve na Play Store',
     },
     {
