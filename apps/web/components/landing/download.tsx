@@ -1,5 +1,6 @@
 import { Monitor, Smartphone, Apple, Download, ExternalLink } from 'lucide-react'
 import { VersionHistory } from './version-history'
+import { downloadThanksHref } from '@/lib/download'
 
 interface GithubAsset {
   name: string
@@ -169,7 +170,7 @@ export async function DownloadSection() {
 
               {p.available && p.url ? (
                 <a
-                  href={p.url}
+                  href={downloadThanksHref(p.url, p.id === 'android' ? 'android' : 'windows')}
                   className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-sm font-semibold transition-all ${p.btnClass}`}
                 >
                   <Download className="w-4 h-4" />

@@ -1,11 +1,13 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { getSessionUser } from '@/lib/auth/session'
 
 export async function ensureStore(input?: { phone?: string; name?: string }) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getSessionUser()
   if (!user) return { error: 'Faça login para continuar.' }
+
+  const supabase = createClient()
 
   const name =
     input?.name?.trim() ||
@@ -24,26 +26,4 @@ export async function ensureStore(input?: { phone?: string; name?: string }) {
   }
 
   return { storeId: data as string }
-}
-
-export async function getMyStoreContact() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { user: null, store: null }
-
-  const { data: membership } = await supabase
-    .from('store_users')
-    .select('store_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!membership) return { user, store: null }
-
-  const { data: store } = await supabase
-    .from('stores')
-    .select('id, name, phone')
-    .eq('id', membership.store_id)
-    .maybeSingle()
-
-  return { user, store }
 }

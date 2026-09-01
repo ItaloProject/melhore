@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
-import { getMyStoreContact } from '@/lib/actions/store'
+import { getMyStoreContact } from '@/lib/queries/store'
 import { PhoneForm } from './form'
+
+export const dynamic = 'force-dynamic'
 
 export default async function TelefonePage() {
   const { user, store } = await getMyStoreContact()

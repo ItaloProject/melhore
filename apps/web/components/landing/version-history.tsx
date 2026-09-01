@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronDown, Download, Clock } from 'lucide-react'
+import { downloadThanksHref } from '@/lib/download'
 
 interface Asset {
   name: string
@@ -118,7 +119,7 @@ export function VersionHistory() {
                     <div className="flex items-center gap-2 flex-wrap">
                       {exe ? (
                         <a
-                          href={exe.browser_download_url}
+                          href={downloadThanksHref(exe.browser_download_url, 'windows')}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500/15 text-brand-300 border border-brand-500/20 hover:bg-brand-500/25 transition-colors"
                         >
                           <Download className="w-3 h-3" />
@@ -131,7 +132,7 @@ export function VersionHistory() {
 
                       {apk ? (
                         <a
-                          href={apk.browser_download_url}
+                          href={downloadThanksHref(apk.browser_download_url, 'android')}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/15 hover:bg-emerald-500/20 transition-colors"
                         >
                           <Download className="w-3 h-3" />
