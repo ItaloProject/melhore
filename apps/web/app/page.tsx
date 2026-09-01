@@ -5,6 +5,7 @@ import { FeaturesSection } from '@/components/landing/features'
 import { FlowSection } from '@/components/landing/flow'
 import { StatsSection } from '@/components/landing/stats'
 import { CtaSection } from '@/components/landing/cta'
+import { DownloadSection } from '@/components/landing/download'
 
 function Logo({ light = false }: { light?: boolean }) {
   return (
@@ -27,6 +28,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-1 text-sm text-slate-400">
             <Link href="#features" className="px-3 py-2 hover:text-white transition-colors rounded-lg hover:bg-white/5">Funcionalidades</Link>
             <Link href="#flow"     className="px-3 py-2 hover:text-white transition-colors rounded-lg hover:bg-white/5">Como funciona</Link>
+            <Link href="#download" className="px-3 py-2 hover:text-white transition-colors rounded-lg hover:bg-white/5">Download</Link>
           </div>
 
           <div className="flex items-center gap-2">
@@ -51,6 +53,7 @@ export default function LandingPage() {
       <StatsSection />
       <FeaturesSection />
       <FlowSection />
+      <DownloadSection />
       <CtaSection />
 
       {/* ── Footer ── */}

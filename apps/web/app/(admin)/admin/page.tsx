@@ -2,83 +2,156 @@ import { TrendingUp, Package, ShoppingCart, AlertTriangle, ArrowUpRight, ArrowDo
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/server'
+import { requireStore } from '@/lib/queries/store'
 
-const stats = [
-  {
-    label: 'Vendas hoje',
-    value: formatCurrency(4_280),
-    delta: '+12% vs ontem',
-    up: true,
-    icon: TrendingUp,
-    bg: 'bg-emerald-50',
-    color: 'text-emerald-600',
-    deltaColor: 'text-emerald-600',
-  },
-  {
-    label: 'Pedidos online',
-    value: '7 pendentes',
-    delta: '3 novos hoje',
-    up: true,
-    icon: ShoppingCart,
-    bg: 'bg-blue-50',
-    color: 'text-blue-600',
-    deltaColor: 'text-blue-600',
-  },
-  {
-    label: 'Itens em estoque',
-    value: '342 unidades',
-    delta: '-18 hoje',
-    up: false,
-    icon: Package,
-    bg: 'bg-violet-50',
-    color: 'text-violet-600',
-    deltaColor: 'text-slate-500',
-  },
-  {
-    label: 'Estoque crítico',
-    value: '5 SKUs',
-    delta: 'Reposição urgente',
-    up: false,
-    icon: AlertTriangle,
-    bg: 'bg-rose-50',
-    color: 'text-rose-600',
-    deltaColor: 'text-rose-600',
-  },
-]
+async function getDashboardData(storeId: string) {
+  const supabase = createClient()
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
 
-const recentSales = [
-  { id: '1', product: 'Camisa Preta M',   price: 89.90,   method: 'Pix',      time: '14:32', channel: 'Físico' },
-  { id: '2', product: 'Calça Jeans 40',   price: 189.90,  method: 'Crédito',  time: '13:55', channel: 'Online' },
-  { id: '3', product: 'Blusa Branca G',   price: 159.80,  method: 'Débito',   time: '12:10', channel: 'Físico' },
-  { id: '4', product: 'Vestido Floral M', price: 229.90,  method: 'Pix',      time: '11:40', channel: 'Online' },
-  { id: '5', product: 'Bermuda Bege 42',  price: 129.90,  method: 'Dinheiro', time: '10:15', channel: 'Físico' },
-]
+  const [salesRes, salesYesterdayRes, ordersRes, inventoryRes, lowStockRes, recentSalesRes, sessionRes] =
+    await Promise.all([
+      supabase
+        .from('sales')
+        .select('total')
+        .eq('store_id', storeId)
+        .gte('created_at', todayStart.toISOString()),
 
-const lowStock = [
-  { name: 'Camisa Branca P', qty: 1 },
-  { name: 'Calça Preta 38',  qty: 2 },
-  { name: 'Blusa Azul M',    qty: 1 },
-  { name: 'Saia Rosa G',     qty: 2 },
-  { name: 'Top Cropped P',   qty: 1 },
-]
+      supabase
+        .from('sales')
+        .select('total')
+        .eq('store_id', storeId)
+        .gte('created_at', new Date(todayStart.getTime() - 86400000).toISOString())
+        .lt('created_at', todayStart.toISOString()),
 
-export default function DashboardPage() {
+      supabase
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('store_id', storeId)
+        .eq('status', 'pending'),
+
+      supabase
+        .from('inventory')
+        .select('quantity, reserved')
+        .eq('store_id', storeId),
+
+      supabase
+        .from('inventory')
+        .select('quantity, reserved, min_quantity, product_variants(products(name), size, color)')
+        .eq('store_id', storeId)
+        .filter('quantity', 'lte', 'min_quantity'),
+
+      supabase
+        .from('sales')
+        .select('id, total, payment_method, created_at, sale_items(product_name, quantity, unit_price)')
+        .eq('store_id', storeId)
+        .order('created_at', { ascending: false })
+        .limit(5),
+
+      supabase
+        .from('cash_sessions')
+        .select('id, status')
+        .eq('store_id', storeId)
+        .eq('status', 'open')
+        .limit(1)
+        .maybeSingle(),
+    ])
+
+  const todaySales    = (salesRes.data ?? []).reduce((s, r) => s + Number(r.total), 0)
+  const yesterdaySales = (salesYesterdayRes.data ?? []).reduce((s, r) => s + Number(r.total), 0)
+  const deltaVendas   = yesterdaySales > 0 ? ((todaySales - yesterdaySales) / yesterdaySales) * 100 : 0
+
+  const totalStock  = (inventoryRes.data ?? []).reduce((s, i) => s + i.quantity, 0)
+  const pendingOrders = ordersRes.count ?? 0
+
+  // Critical stock: available <= min_quantity
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const criticalItems = (lowStockRes.data ?? []).filter((i: any) =>
+    (i.quantity - i.reserved) <= i.min_quantity
+  )
+
+  return {
+    todaySales,
+    deltaVendas,
+    pendingOrders,
+    totalStock,
+    criticalCount: criticalItems.length,
+    criticalItems: criticalItems.slice(0, 5),
+    recentSales: recentSalesRes.data ?? [],
+    caixaAberto: !!sessionRes.data,
+  }
+}
+
+function methodLabel(m: string) {
+  const map: Record<string, string> = { cash: 'Dinheiro', pix: 'Pix', debit: 'Débito', credit: 'Crédito', other: 'Outro' }
+  return map[m] ?? m
+}
+
+function saleTime(iso: string) {
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+}
+
+export default async function DashboardPage() {
+  const { storeId } = await requireStore()
+  const d = await getDashboardData(storeId)
+
+  const now = new Date()
+  const hora = now.getHours()
+  const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'
+  const dataFormatada = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
+  const stats = [
+    {
+      label: 'Vendas hoje',
+      value: formatCurrency(d.todaySales),
+      delta: d.deltaVendas >= 0 ? `+${d.deltaVendas.toFixed(0)}% vs ontem` : `${d.deltaVendas.toFixed(0)}% vs ontem`,
+      up: d.deltaVendas >= 0,
+      icon: TrendingUp,
+      bg: 'bg-emerald-50', color: 'text-emerald-600', deltaColor: d.deltaVendas >= 0 ? 'text-emerald-600' : 'text-rose-600',
+    },
+    {
+      label: 'Pedidos online',
+      value: `${d.pendingOrders} pendentes`,
+      delta: 'Aguardando confirmação',
+      up: d.pendingOrders === 0,
+      icon: ShoppingCart,
+      bg: 'bg-blue-50', color: 'text-blue-600', deltaColor: 'text-slate-500',
+    },
+    {
+      label: 'Itens em estoque',
+      value: `${d.totalStock} unidades`,
+      delta: 'Total no inventário',
+      up: true,
+      icon: Package,
+      bg: 'bg-violet-50', color: 'text-violet-600', deltaColor: 'text-slate-500',
+    },
+    {
+      label: 'Estoque crítico',
+      value: `${d.criticalCount} SKUs`,
+      delta: d.criticalCount > 0 ? 'Reposição urgente' : 'Tudo ok',
+      up: d.criticalCount === 0,
+      icon: AlertTriangle,
+      bg: 'bg-rose-50', color: 'text-rose-600', deltaColor: d.criticalCount > 0 ? 'text-rose-600' : 'text-emerald-600',
+    },
+  ]
+
   return (
     <div className="p-7 space-y-6 min-h-full bg-slate-50">
-
-      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Bom dia 👋</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Segunda-feira, 1 de setembro de 2026</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{saudacao} 👋</h1>
+          <p className="text-sm text-gray-400 mt-0.5 capitalize">{dataFormatada}</p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-700 font-medium">
+        <div className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-medium ${
+          d.caixaAberto
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+            : 'border-gray-200 bg-gray-50 text-gray-500'
+        }`}>
           <Zap className="w-3.5 h-3.5" />
-          Caixa aberto
+          {d.caixaAberto ? 'Caixa aberto' : 'Caixa fechado'}
         </div>
       </div>
 
-      {/* KPI cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         {stats.map((s) => (
           <Card key={s.label} className="border-0 shadow-sm">
@@ -88,9 +161,7 @@ export default function DashboardPage() {
                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{s.label}</p>
                   <p className="text-2xl font-bold text-gray-900 tracking-tight">{s.value}</p>
                   <div className={`flex items-center gap-1 text-xs font-medium ${s.deltaColor}`}>
-                    {s.up
-                      ? <ArrowUpRight className="w-3 h-3" />
-                      : <ArrowDownRight className="w-3 h-3" />}
+                    {s.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                     {s.delta}
                   </div>
                 </div>
@@ -103,10 +174,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        {/* Recent sales */}
         <div className="lg:col-span-2">
           <Card className="border-0 shadow-sm overflow-hidden">
             <CardHeader>
@@ -115,39 +183,42 @@ export default function DashboardPage() {
                 <Badge variant="default">Hoje</Badge>
               </div>
             </CardHeader>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-slate-50/60">
-                    <th className="text-left py-2.5 px-5 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Produto</th>
-                    <th className="text-right py-2.5 px-5 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Valor</th>
-                    <th className="text-center py-2.5 px-5 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Canal</th>
-                    <th className="text-right py-2.5 px-5 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Hora</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentSales.map((s) => (
-                    <tr key={s.id} className="border-t border-gray-50 hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-5">
-                        <p className="font-medium text-gray-900">{s.product}</p>
-                        <p className="text-xs text-gray-400">{s.method}</p>
-                      </td>
-                      <td className="py-3.5 px-5 text-right font-semibold text-gray-900">
-                        {formatCurrency(s.price)}
-                      </td>
-                      <td className="py-3.5 px-5 text-center">
-                        <Badge variant={s.channel === 'Online' ? 'info' : 'default'}>{s.channel}</Badge>
-                      </td>
-                      <td className="py-3.5 px-5 text-right text-gray-400 tabular-nums">{s.time}</td>
+            {d.recentSales.length === 0 ? (
+              <div className="py-12 text-center text-sm text-gray-400">Nenhuma venda registrada ainda</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50/60">
+                      {['Produto', 'Valor', 'Pagamento', 'Hora'].map((h, i) => (
+                        <th key={h} className={`py-2.5 px-5 text-[11px] font-semibold text-gray-400 uppercase tracking-wider ${i === 0 ? 'text-left' : i === 1 ? 'text-right' : 'text-center'}`}>{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {d.recentSales.map((s: any) => (
+                      <tr key={s.id} className="border-t border-gray-50 hover:bg-slate-50/80 transition-colors">
+                        <td className="py-3.5 px-5">
+                          <p className="font-medium text-gray-900">{s.sale_items?.[0]?.product_name ?? '—'}</p>
+                          {s.sale_items?.length > 1 && (
+                            <p className="text-xs text-gray-400">+{s.sale_items.length - 1} item(s)</p>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-5 text-right font-semibold text-gray-900">{formatCurrency(Number(s.total))}</td>
+                        <td className="py-3.5 px-5 text-center">
+                          <Badge variant="default">{methodLabel(s.payment_method)}</Badge>
+                        </td>
+                        <td className="py-3.5 px-5 text-center text-gray-400 tabular-nums">{saleTime(s.created_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </Card>
         </div>
 
-        {/* Low stock */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -158,16 +229,24 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3.5">
-            {lowStock.map((item) => (
-              <div key={item.name} className="flex items-center justify-between">
-                <p className="text-sm text-gray-700 font-medium">{item.name}</p>
-                <Badge variant="danger">{item.qty} un.</Badge>
-              </div>
-            ))}
+            {d.criticalItems.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">Nenhum item crítico</p>
+            ) : (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              d.criticalItems.map((item: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <p className="text-sm text-gray-700 font-medium">
+                    {(item.product_variants?.products?.name ?? item.product_variants?.products?.[0]?.name) ?? '—'}
+                    {item.product_variants?.size ? ` ${item.product_variants.size}` : ''}
+                  </p>
+                  <Badge variant="danger">{item.quantity - item.reserved} un.</Badge>
+                </div>
+              ))
+            )}
             <div className="pt-2 border-t border-gray-100">
-              <button className="text-xs text-brand-600 hover:text-brand-500 font-medium transition-colors">
+              <a href="/admin/estoque" className="text-xs text-brand-600 hover:text-brand-500 font-medium transition-colors">
                 Ver estoque completo →
-              </button>
+              </a>
             </div>
           </CardContent>
         </Card>

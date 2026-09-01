@@ -69,4 +69,96 @@
     0%, 100% { text-shadow: 0 0 6px  rgba(167,139,250,0.3),  0 0 16px rgba(167,139,250,0.10); }
     50%       { text-shadow: 0 0 14px rgba(167,139,250,0.75), 0 0 36px rgba(167,139,250,0.30); }
   }
+
+  /* ── Hero mockup animation ─────────────────────────────────────────────── */
+  .hmock-cursor {
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 1.5px solid rgba(255,255,255,0.55);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    pointer-events: none;
+    z-index: 30;
+    transition: left .65s cubic-bezier(.4,0,.2,1), top .65s cubic-bezier(.4,0,.2,1);
+  }
+  .hmock-cursor::after {
+    content: '';
+    width: 3px; height: 3px; border-radius: 50%; background: white;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  }
+  .hmock-cursor.hmock-click { animation: hmockClick .22s ease; }
+  @keyframes hmockClick {
+    40%  { transform: scale(.65); background: rgba(255,255,255,.18); }
+    100% { transform: scale(1); }
+  }
+
+  .hmock-nav-hover   { background: rgba(139,111,212,.08) !important; }
+  .hmock-nav-active  { background: rgba(139,111,212,.18) !important; color: #A088E0 !important; }
+  .hmock-nav-active .hmock-nav-dot { background: #A088E0 !important; }
+
+  .hmock-row { transition: background .18s; }
+  .hmock-row-hover { background: rgba(139,111,212,.1); }
+  .hmock-row-hover .hmock-name { color: #A088E0; }
+
+  @keyframes hmockRowIn {
+    from { opacity: 0; transform: translateX(-10px); background: rgba(139,111,212,.15); }
+    to   { opacity: 1; transform: none; }
+  }
+  .hmock-row-new { animation: hmockRowIn .32s ease; }
+
+  .hmock-bounce { animation: hmockBounce .3s ease; }
+  @keyframes hmockBounce {
+    0%,100% { transform: translateY(0); opacity: 1; }
+    45%     { transform: translateY(-5px); opacity: 0; }
+    46%     { transform: translateY(5px);  opacity: 0; }
+  }
+
+  .hmock-notif {
+    position: absolute; top: -5px; right: -5px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #F87171; border: 1.5px solid #0a0a0a;
+    animation: hmockNotif .25s cubic-bezier(.2,0,.4,1.6);
+  }
+  @keyframes hmockNotif {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .hmock-est-btn-active { background: rgba(139,111,212,.38) !important; transform: scale(1.25); }
+  .hmock-est-crit { color: #F87171 !important; }
+  .hmock-est-ok   { color: #4ADE80 !important; }
+
+  @keyframes hmockBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+  .hmock-pdvcaret {
+    display: inline-block; width: 1px; height: 9px;
+    background: #A088E0; vertical-align: middle;
+    animation: hmockBlink .9s step-end infinite; margin-left: 1px;
+  }
+
+  .hmock-pill { display:inline-flex;align-items:center;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:500; }
+  .hmock-pill-green { background:rgba(74,222,128,.12);color:#4ADE80; }
+  .hmock-pill-blue  { background:rgba(96,165,250,.12);color:#60A5FA; }
+  .hmock-row {
+    display: grid; grid-template-columns: 1fr auto auto;
+    padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center;
+  }
+  .hmock-row:last-child { border-bottom: none; }
+  .hmock-cell  { font-size: 10px; color: #A89E90; }
+  .hmock-name  { color: #F2EDE4; font-weight: 500; }
+  .hmock-price { font-variant-numeric: tabular-nums; font-weight: 500; }
+  .hmock-est-qty {
+    font-weight: 600; font-variant-numeric: tabular-nums; color: #F2EDE4;
+  }
+  .hmock-est-row {
+    display: grid; grid-template-columns: 1fr 30px 26px 20px;
+    padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center;
+  }
+  .hmock-est-row:last-child { border-bottom: none; }
+  .hmock-est-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 3px;
+    background: rgba(139,111,212,.12); color: #A088E0;
+    font-size: 10px; font-weight: 700;
+    transition: background .12s, transform .12s;
+  }
 }
