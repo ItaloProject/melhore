@@ -21,10 +21,6 @@ function googleErrorMessage(message: string) {
 }
 
 export async function signInWithGoogle(next = '/cadastro/telefone') {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return 'Login com Google não está configurado. Use e-mail e senha.'
-  }
-
   const supabase = createClient()
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
