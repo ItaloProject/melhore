@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    @apply text-gray-900 antialiased;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.gray.300') transparent;
+  }
+
+  .scrollbar-dark {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.surface.600') transparent;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-400 via-brand-300 to-violet-200 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-white {
+    @apply bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent;
+  }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-sm border border-white/10;
+  }
+
+  .glass-light {
+    @apply bg-white/80 backdrop-blur-sm border border-gray-200/60;
+  }
+
+  /* Logo "E" animation */
+  .logo-e {
+    display: inline-block;
+    animation:
+      logo-e-flicker 1.6s cubic-bezier(0.4, 0, 0.6, 1) forwards,
+      logo-e-pulse   3s  ease-in-out infinite 1.6s;
+  }
+
+  @keyframes logo-e-flicker {
+    0%   { opacity: 0;   text-shadow: none; }
+    5%   { opacity: 1;   text-shadow: 0 0 10px rgba(167,139,250,0.9), 0 0 24px rgba(167,139,250,0.5); }
+    8%   { opacity: 0.1; text-shadow: none; }
+    14%  { opacity: 1;   text-shadow: 0 0 14px rgba(167,139,250,1),   0 0 32px rgba(167,139,250,0.6); }
+    18%  { opacity: 0.4; text-shadow: none; }
+    24%  { opacity: 1;   text-shadow: 0 0 18px rgba(167,139,250,1),   0 0 40px rgba(167,139,250,0.7); }
+    100% { opacity: 1;   text-shadow: 0 0 8px  rgba(167,139,250,0.4), 0 0 20px rgba(167,139,250,0.15); }
+  }
+
+  @keyframes logo-e-pulse {
+    0%, 100% { text-shadow: 0 0 6px  rgba(167,139,250,0.3),  0 0 16px rgba(167,139,250,0.10); }
+    50%       { text-shadow: 0 0 14px rgba(167,139,250,0.75), 0 0 36px rgba(167,139,250,0.30); }
+  }
+}

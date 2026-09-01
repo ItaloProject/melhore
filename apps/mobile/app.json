@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Melhore",
+    "slug": "melhore",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "melhore",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.melhore.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#7c3aed"
+      },
+      "package": "com.melhore.app"
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "extra": {
+      "eas": { "projectId": "your-eas-project-id" }
+    }
+  }
+}
