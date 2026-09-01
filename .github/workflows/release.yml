@@ -19,9 +19,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Instalar dependências
-        working-directory: apps/desktop
         run: npm install
 
       - name: Gerar ícone
@@ -65,14 +65,14 @@ jobs:
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
           cp apps/desktop/assets/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
-      - name: Compilar APK
+      - name: Compilar APK assinado
         working-directory: android
-        run: gradle assembleRelease
+        run: gradle assembleDebug
 
       - name: Renomear APK
         run: |
           mkdir -p dist
-          cp android/app/build/outputs/apk/release/app-release.apk dist/Melhore-1.0.0.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist/Melhore-1.0.0.apk
 
       - uses: actions/upload-artifact@v4
         with:
@@ -82,9 +82,11 @@ jobs:
   publish:
     name: Publicar no GitHub Releases
     needs: [windows, android]
+    if: ${{ !cancelled() && (needs.android.result == 'success' || needs.windows.result == 'success') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
+        continue-on-error: true
 
       - name: Publicar release
         uses: softprops/action-gh-release@v2
@@ -92,9 +94,10 @@ jobs:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.0' }}
           name: Melhore ${{ github.ref_type == 'tag' && github.ref_name || 'v1.0.0' }}
           generate_release_notes: true
+          fail_on_unmatched_files: false
           files: |
-            windows-installer/*
-            android-apk/*
+            windows-installer/*.exe
+            android-apk/*.apk
           body: |
             Primeira versão pública do Melhore.
 

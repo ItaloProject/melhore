@@ -19,6 +19,9 @@ android {
             minifyEnabled false
             signingConfig signingConfigs.debug
         }
+        debug {
+            signingConfig signingConfigs.debug
+        }
     }
 
     compileOptions {
