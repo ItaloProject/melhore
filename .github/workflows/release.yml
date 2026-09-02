@@ -19,10 +19,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Instalar dependências do desktop
-        working-directory: apps/desktop
-        run: npm install --install-strategy=nested
+        run: npm ci
 
       - name: Gerar ícone
         run: node apps/desktop/scripts/create-icon.js
