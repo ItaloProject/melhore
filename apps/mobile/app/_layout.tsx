@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { Text } from 'react-native'
 
 export default function RootLayout() {
   return (
@@ -12,6 +13,21 @@ export default function RootLayout() {
           headerTitleStyle: { fontWeight: '700' },
         }}
       />
+      <Text
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          right: 10,
+          bottom: 8,
+          zIndex: 100,
+          fontSize: 9,
+          fontWeight: '500',
+          letterSpacing: 0.2,
+          color: 'rgba(148, 163, 184, 0.45)',
+        }}
+      >
+        Desenvolvido por: Italo Fontes
+      </Text>
     </>
   )
 }
