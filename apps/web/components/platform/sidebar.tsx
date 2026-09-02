@@ -7,9 +7,9 @@ import {
   Store,
   CreditCard,
   ArrowLeft,
-  Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { BrandLogo } from '@/components/brand/logo'
 
 const items = [
   { href: '/plataforma', label: 'Visão geral', icon: LayoutDashboard },
@@ -23,7 +23,7 @@ export function PlatformSidebar() {
   return (
     <aside className="flex flex-col w-56 shrink-0 bg-slate-950 border-r border-white/5">
       <div className="h-14 flex items-center gap-2 px-4 border-b border-white/5">
-        <Shield className="w-4 h-4 text-brand-400" />
+        <BrandLogo size={30} showName={false} />
         <div>
           <p className="text-sm font-bold tracking-[0.06em] text-white">MELHORE</p>
           <p className="text-[10px] uppercase tracking-widest text-brand-300/80">Plataforma</p>

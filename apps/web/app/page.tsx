@@ -6,14 +6,7 @@ import { FlowSection } from '@/components/landing/flow'
 import { StatsSection } from '@/components/landing/stats'
 import { CtaSection } from '@/components/landing/cta'
 import { DownloadSection } from '@/components/landing/download'
-
-function Logo({ light = false }: { light?: boolean }) {
-  return (
-    <span className={`text-xl font-bold tracking-[0.06em] ${light ? 'text-white' : 'text-gray-900'}`}>
-      MELHOR<span className="text-brand-400 logo-e">E</span>
-    </span>
-  )
-}
+import { BrandLogo } from '@/components/brand/logo'
 
 export default function LandingPage() {
   return (
@@ -22,7 +15,7 @@ export default function LandingPage() {
       {/* ── Nav ── */}
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Logo light />
+          <BrandLogo size={36} className="text-lg" />
 
           {/* links — hidden on mobile */}
           <div className="hidden md:flex items-center gap-1 text-sm text-slate-400">
@@ -59,7 +52,7 @@ export default function LandingPage() {
       {/* ── Footer ── */}
       <footer className="border-t border-white/5 py-8 px-4 sm:px-6">
         <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Logo light />
+          <BrandLogo size={36} className="text-lg" />
           <p className="text-sm text-slate-600 order-last sm:order-none">
             © {new Date().getFullYear()} Melhore. Todos os direitos reservados.
           </p>

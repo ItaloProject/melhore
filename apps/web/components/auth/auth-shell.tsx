@@ -1,12 +1,9 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import { BrandLogo } from '@/components/brand/logo'
 
 export function Logo() {
-  return (
-    <span className="text-2xl font-bold tracking-[0.06em] text-white">
-      MELHOR<span className="text-brand-400 logo-e">E</span>
-    </span>
-  )
+  return <BrandLogo size={38} className="text-xl" />
 }
 
 export function AuthShell({

@@ -16,6 +16,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { BrandLogo } from '@/components/brand/logo'
 
 const navItems = [
   { href: '/admin',            icon: LayoutDashboard, label: 'Dashboard' },
@@ -26,14 +27,6 @@ const navItems = [
   { href: '/admin/relatorios', icon: BarChart3,        label: 'Relatórios' },
 ]
 
-function Logo() {
-  return (
-    <span className="text-base font-bold tracking-[0.06em] text-white">
-      MELHOR<span className="text-brand-400 logo-e">E</span>
-    </span>
-  )
-}
-
 export function AdminSidebar({ showPlatform = false }: { showPlatform?: boolean }) {
   const pathname = usePathname()
 
@@ -41,7 +34,7 @@ export function AdminSidebar({ showPlatform = false }: { showPlatform?: boolean 
     <aside className="flex flex-col w-56 shrink-0 bg-surface-900 border-r border-white/5">
       {/* Top bar */}
       <div className="h-14 flex items-center justify-between px-4 border-b border-white/5">
-        <Logo />
+        <BrandLogo size={30} className="text-sm" />
         <button className="relative p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-slate-200 transition-colors">
           <Bell className="w-4 h-4" />
           <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-brand-500" />

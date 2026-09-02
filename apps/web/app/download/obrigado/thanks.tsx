@@ -4,14 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Check, Download, ArrowLeft } from 'lucide-react'
 import { startSilentDownload } from '@/lib/download'
-
-function Logo() {
-  return (
-    <span className="text-2xl font-bold tracking-[0.06em] text-white">
-      MELHOR<span className="text-brand-400 logo-e">E</span>
-    </span>
-  )
-}
+import { BrandLogo } from '@/components/brand/logo'
 
 export function DownloadThanks({
   url,
@@ -41,7 +34,7 @@ export function DownloadThanks({
 
       <div className="relative w-full max-w-md text-center">
         <Link href="/" className="inline-block mb-10">
-          <Logo />
+          <BrandLogo size={42} className="text-xl" />
         </Link>
 
         <div className="rounded-3xl border border-white/10 bg-surface-900/80 p-8 sm:p-10 shadow-2xl shadow-black/40">

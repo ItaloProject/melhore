@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowRight, CheckCircle, Zap } from 'lucide-react'
 import { useFadeUp } from '@/hooks/use-gsap'
+import { BrandLogo } from '@/components/brand/logo'
 
 const badges = ['Sem cartão de crédito', '5 min para configurar', 'Windows, Android e iOS']
 
@@ -347,9 +348,7 @@ export function HeroSection() {
                 {/* sidebar */}
                 <div className="hidden lg:flex w-40 xl:w-44 bg-surface-900 border-r border-white/5 p-2.5 flex-col gap-0.5 shrink-0">
                   <div className="px-2 py-1.5 mb-1">
-                    <span className="text-xs font-bold tracking-[0.06em] text-white">
-                      MELHOR<span className="text-brand-400" style={{ textShadow: '0 0 8px rgba(167,139,250,0.5)' }}>E</span>
-                    </span>
+                    <BrandLogo size={20} className="text-[11px]" />
                   </div>
                   {navItems.map((item, i) => (
                     <div
