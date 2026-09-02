@@ -1,6 +1,6 @@
 {
   "name": "@melhore/desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "Melhore Desktop — PDV e gestão",
   "author": "ItaloProject",
@@ -35,6 +35,12 @@
       "main.js",
       "package.json",
       "assets/**/*"
+    ],
+    "protocols": [
+      {
+        "name": "Melhore",
+        "schemes": ["melhore"]
+      }
     ],
     "win": {
       "icon": "assets/icon.ico",

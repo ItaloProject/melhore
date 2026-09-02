@@ -1,9 +1,11 @@
 package com.melhore.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +13,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
     private static final String APP_URL = "https://melhore-seven.vercel.app/admin";
+    private static final String WEB_ORIGIN = "https://melhore-seven.vercel.app";
     private static final long CHECK_DELAY_MS = 2500L;
     private static final long CHECK_INTERVAL_MS = 4L * 60L * 60L * 1000L;
 
@@ -52,14 +56,27 @@ public class MainActivity extends Activity {
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        settings.setUserAgentString(settings.getUserAgentString() + " MelhoreAndroid/1.0.3");
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, true);
 
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return openNativeAuthInBrowser(request.getUrl().toString());
+            }
+
+            @Override
+            @SuppressWarnings("deprecation")
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return openNativeAuthInBrowser(url);
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient());
-        webView.loadUrl(APP_URL);
+        String callbackUrl = authCallbackUrl(getIntent());
+        webView.loadUrl(callbackUrl != null ? callbackUrl : APP_URL);
 
         updateBar = new TextView(this);
         updateBar.setTextColor(Color.WHITE);
@@ -106,6 +123,16 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String callbackUrl = authCallbackUrl(intent);
+        if (callbackUrl != null && webView != null) {
+            webView.loadUrl(callbackUrl);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         handler.removeCallbacks(periodicCheck);
         super.onDestroy();
@@ -127,5 +154,31 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             return "0";
         }
+    }
+
+    private boolean openNativeAuthInBrowser(String url) {
+        if (url == null || !url.startsWith(WEB_ORIGIN + "/auth/native#")) return false;
+
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private String authCallbackUrl(Intent intent) {
+        if (intent == null || intent.getData() == null) return null;
+
+        Uri uri = intent.getData();
+        if (!"melhore".equals(uri.getScheme())
+                || !"auth".equals(uri.getHost())
+                || !"/callback".equals(uri.getPath())) {
+            return null;
+        }
+
+        String fragment = uri.getEncodedFragment();
+        if (fragment == null || fragment.isEmpty()) return null;
+        return WEB_ORIGIN + "/auth/native/callback#" + fragment;
     }
 }

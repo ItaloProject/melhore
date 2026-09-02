@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, shell } = require('electron')
 const path = require('path')
 
 const isDev = !app.isPackaged
@@ -8,6 +8,38 @@ const WEB_URL = isDev
 
 let autoUpdater = null
 let mainWindow = null
+let pendingAuthUrl = null
+
+function findAuthUrl(argv) {
+  return argv.find((value) => typeof value === 'string' && value.startsWith('melhore://auth/callback#'))
+}
+
+function handleAuthUrl(authUrl) {
+  if (!authUrl) return
+
+  try {
+    const parsed = new URL(authUrl)
+    if (parsed.protocol !== 'melhore:' || parsed.hostname !== 'auth' || parsed.pathname !== '/callback') return
+
+    const fragment = parsed.hash.slice(1)
+    const params = new URLSearchParams(fragment)
+    if (!params.get('request') || !params.get('payload')) return
+
+    if (!mainWindow) {
+      pendingAuthUrl = authUrl
+      return
+    }
+
+    const callbackUrl = `${WEB_URL}/auth/native/callback#${fragment}`
+    pendingAuthUrl = null
+    mainWindow.loadURL(callbackUrl)
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.show()
+    mainWindow.focus()
+  } catch (err) {
+    console.error('[auth] callback invalido:', err)
+  }
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -21,6 +53,16 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
+  })
+
+  mainWindow.webContents.setUserAgent(
+    `${mainWindow.webContents.getUserAgent()} MelhoreDesktop/1.0.3`,
+  )
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//i.test(url)) {
+      shell.openExternal(url).catch((err) => console.error('[browser]', err))
+    }
+    return { action: 'deny' }
   })
 
   mainWindow.loadURL(`${WEB_URL}/admin`)
@@ -75,7 +117,13 @@ const gotLock = app.requestSingleInstanceLock()
 if (!gotLock) {
   app.quit()
 } else {
-  app.on('second-instance', () => {
+  app.on('second-instance', (_event, argv) => {
+    const authUrl = findAuthUrl(argv)
+    if (authUrl) {
+      handleAuthUrl(authUrl)
+      return
+    }
+
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
@@ -84,7 +132,13 @@ if (!gotLock) {
 
   app.whenReady().then(() => {
     app.setAppUserModelId('com.melhore.desktop')
+    if (process.defaultApp && process.argv.length >= 2) {
+      app.setAsDefaultProtocolClient('melhore', process.execPath, [path.resolve(process.argv[1])])
+    } else {
+      app.setAsDefaultProtocolClient('melhore')
+    }
     createWindow()
+    handleAuthUrl(findAuthUrl(process.argv) || pendingAuthUrl)
     setupAutoUpdater()
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -93,5 +147,10 @@ if (!gotLock) {
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
+  })
+
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+    handleAuthUrl(url)
   })
 }
