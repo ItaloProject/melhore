@@ -7,9 +7,11 @@ import {
   Store,
   CreditCard,
   ArrowLeft,
+  LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BrandLogo } from '@/components/brand/logo'
+import { logout } from '@/lib/actions/logout'
 
 const items = [
   { href: '/plataforma', label: 'Visão geral', icon: LayoutDashboard },
@@ -50,7 +52,7 @@ export function PlatformSidebar() {
         })}
       </nav>
 
-      <div className="p-3 border-t border-white/5">
+      <div className="p-3 border-t border-white/5 space-y-1">
         <Link
           href="/admin"
           className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-500 hover:text-white hover:bg-white/5"
@@ -58,6 +60,15 @@ export function PlatformSidebar() {
           <ArrowLeft className="w-4 h-4" />
           Painel da loja
         </Link>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Sair
+          </button>
+        </form>
       </div>
     </aside>
   )
