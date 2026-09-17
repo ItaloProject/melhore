@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -52,9 +53,11 @@ export default async function ProdutosPage() {
           <h1 className="text-2xl font-bold text-gray-900">Produtos</h1>
           <p className="text-sm text-gray-500 mt-0.5">{products.length} produto{products.length !== 1 ? 's' : ''} cadastrado{products.length !== 1 ? 's' : ''}</p>
         </div>
-        <Button variant="primary">
-          <Plus className="w-4 h-4" /> Novo Produto
-        </Button>
+        <Link href="/admin/produtos/novo">
+          <Button variant="primary">
+            <Plus className="w-4 h-4" /> Novo Produto
+          </Button>
+        </Link>
       </div>
 
       <ProdutosClient products={products} storeId={storeId} />

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Search, Edit2, Trash2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -89,9 +90,11 @@ export function ProdutosClient({ products, storeId }: { products: Product[]; sto
                 </td>
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-1 justify-end">
-                    <Button variant="ghost" size="icon" title="Editar">
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
+                    <Link href={`/admin/produtos/${p.id}`}>
+                      <Button variant="ghost" size="icon" title="Editar">
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                    </Link>
                     <Button variant="ghost" size="icon" title={p.active ? 'Desativar' : 'Ativar'} onClick={() => toggleActive(p.id, p.active)}>
                       {p.active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </Button>
