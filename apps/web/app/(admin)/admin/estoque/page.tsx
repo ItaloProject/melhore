@@ -1,5 +1,3 @@
-import { Filter } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { requireStore } from '@/lib/queries/store'
 import { EstoqueClient } from './client'
@@ -41,15 +39,9 @@ export default async function EstoquePage() {
 
   return (
     <div className="p-6 space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Estoque</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Controle por variação (tamanho + cor)</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline"><Filter className="w-4 h-4" /> Filtros</Button>
-          <Button variant="primary">Ajustar Estoque</Button>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Estoque</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Controle por variação (tamanho + cor)</p>
       </div>
 
       <div className="flex gap-3 flex-wrap">
