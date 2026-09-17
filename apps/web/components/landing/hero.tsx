@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
+import { ArrowRight, CheckCircle } from 'lucide-react'
 import { useFadeUp } from '@/hooks/use-gsap'
 import { BrandLogo } from '@/components/brand/logo'
 
@@ -263,7 +263,7 @@ export function HeroSection() {
   }, [])
 
   return (
-    <section className="relative min-h-[calc(100svh-64px)] flex items-center py-12 px-4 sm:px-6 overflow-hidden">
+    <section className="relative min-h-[calc(100svh-64px)] flex items-center pt-20 pb-12 px-4 sm:px-6 overflow-x-hidden">
       {/* glow quente — âmbar */}
       <div className="absolute inset-0 bg-mesh-brand opacity-80 pointer-events-none" />
       <div className="absolute top-1/3 left-1/4 w-[min(560px,80vw)] h-72 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -274,8 +274,8 @@ export function HeroSection() {
 
           {/* ── Left: headline + CTA ── */}
           <div ref={leftRef} style={{ opacity: 0 }} className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-amber-500/8 px-4 py-1.5 text-sm text-amber-300/90 mb-7">
-              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3.5 py-1 text-xs font-medium text-slate-400 mb-7">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
               Físico e digital em tempo real
             </span>
 
