@@ -1,6 +1,9 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+
+export type OrderStatus = 'pending' | 'confirmed' | 'reserved' | 'shipped' | 'delivered' | 'cancelled'
 
 export interface PlaceOrderItem {
   variantId: string
@@ -40,4 +43,17 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderId?: st
 
   if (error) return { error: error.message }
   return { orderId: data as string }
+}
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus) {
+  const supabase = createClient()
+
+  const { error } = await supabase.rpc('update_order_status', {
+    p_order_id: orderId,
+    p_status: status,
+  })
+
+  if (error) return { error: error.message }
+  revalidatePath('/admin/pedidos')
+  return { ok: true }
 }

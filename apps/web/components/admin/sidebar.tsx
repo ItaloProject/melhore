@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Bell,
   Shield,
+  ClipboardList,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BrandLogo } from '@/components/brand/logo'
@@ -23,6 +24,7 @@ const navItems = [
   { href: '/admin/produtos',   icon: Package,          label: 'Produtos' },
   { href: '/admin/estoque',    icon: Store,            label: 'Estoque' },
   { href: '/admin/vendas',     icon: ShoppingCart,     label: 'Vendas / PDV' },
+  { href: '/admin/pedidos',    icon: ClipboardList,    label: 'Pedidos' },
   { href: '/admin/caixa',      icon: CreditCard,       label: 'Caixa' },
   { href: '/admin/relatorios', icon: BarChart3,        label: 'Relatórios' },
 ]
