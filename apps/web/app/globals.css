@@ -32,7 +32,7 @@
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-brand-400 via-brand-300 to-violet-200 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-200 bg-clip-text text-transparent;
   }
 
   .text-gradient-white {
@@ -47,7 +47,7 @@
     @apply bg-white/80 backdrop-blur-sm border border-gray-200/60;
   }
 
-  /* Logo "E" animation */
+  /* Logo "E" animation — âmbar */
   .logo-e {
     display: inline-block;
     animation:
@@ -57,17 +57,17 @@
 
   @keyframes logo-e-flicker {
     0%   { opacity: 0;   text-shadow: none; }
-    5%   { opacity: 1;   text-shadow: 0 0 10px rgba(167,139,250,0.9), 0 0 24px rgba(167,139,250,0.5); }
+    5%   { opacity: 1;   text-shadow: 0 0 10px rgba(251,191,36,0.9), 0 0 24px rgba(251,191,36,0.5); }
     8%   { opacity: 0.1; text-shadow: none; }
-    14%  { opacity: 1;   text-shadow: 0 0 14px rgba(167,139,250,1),   0 0 32px rgba(167,139,250,0.6); }
+    14%  { opacity: 1;   text-shadow: 0 0 14px rgba(251,191,36,1),   0 0 32px rgba(251,191,36,0.6); }
     18%  { opacity: 0.4; text-shadow: none; }
-    24%  { opacity: 1;   text-shadow: 0 0 18px rgba(167,139,250,1),   0 0 40px rgba(167,139,250,0.7); }
-    100% { opacity: 1;   text-shadow: 0 0 8px  rgba(167,139,250,0.4), 0 0 20px rgba(167,139,250,0.15); }
+    24%  { opacity: 1;   text-shadow: 0 0 18px rgba(251,191,36,1),   0 0 40px rgba(251,191,36,0.7); }
+    100% { opacity: 1;   text-shadow: 0 0 8px  rgba(251,191,36,0.4), 0 0 20px rgba(251,191,36,0.15); }
   }
 
   @keyframes logo-e-pulse {
-    0%, 100% { text-shadow: 0 0 6px  rgba(167,139,250,0.3),  0 0 16px rgba(167,139,250,0.10); }
-    50%       { text-shadow: 0 0 14px rgba(167,139,250,0.75), 0 0 36px rgba(167,139,250,0.30); }
+    0%, 100% { text-shadow: 0 0 6px  rgba(251,191,36,0.3),  0 0 16px rgba(251,191,36,0.10); }
+    50%       { text-shadow: 0 0 14px rgba(251,191,36,0.75), 0 0 36px rgba(251,191,36,0.30); }
   }
 
   /* ── Hero mockup animation ─────────────────────────────────────────────── */
@@ -92,16 +92,17 @@
     100% { transform: scale(1); }
   }
 
-  .hmock-nav-hover   { background: rgba(139,111,212,.08) !important; }
-  .hmock-nav-active  { background: rgba(139,111,212,.18) !important; color: #A088E0 !important; }
-  .hmock-nav-active .hmock-nav-dot { background: #A088E0 !important; }
+  /* âmbar para nav active */
+  .hmock-nav-hover   { background: rgba(245,158,11,.08) !important; }
+  .hmock-nav-active  { background: rgba(245,158,11,.15) !important; color: #FBBF24 !important; }
+  .hmock-nav-active .hmock-nav-dot { background: #FBBF24 !important; }
 
   .hmock-row { transition: background .18s; }
-  .hmock-row-hover { background: rgba(139,111,212,.1); }
-  .hmock-row-hover .hmock-name { color: #A088E0; }
+  .hmock-row-hover { background: rgba(245,158,11,.10); }
+  .hmock-row-hover .hmock-name { color: #FBBF24; }
 
   @keyframes hmockRowIn {
-    from { opacity: 0; transform: translateX(-10px); background: rgba(139,111,212,.15); }
+    from { opacity: 0; transform: translateX(-10px); background: rgba(245,158,11,.15); }
     to   { opacity: 1; transform: none; }
   }
   .hmock-row-new { animation: hmockRowIn .32s ease; }
@@ -124,14 +125,14 @@
     to   { transform: scale(1); opacity: 1; }
   }
 
-  .hmock-est-btn-active { background: rgba(139,111,212,.38) !important; transform: scale(1.25); }
+  .hmock-est-btn-active { background: rgba(245,158,11,.35) !important; transform: scale(1.25); }
   .hmock-est-crit { color: #F87171 !important; }
   .hmock-est-ok   { color: #4ADE80 !important; }
 
   @keyframes hmockBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
   .hmock-pdvcaret {
     display: inline-block; width: 1px; height: 9px;
-    background: #A088E0; vertical-align: middle;
+    background: #FBBF24; vertical-align: middle;
     animation: hmockBlink .9s step-end infinite; margin-left: 1px;
   }
 
@@ -157,7 +158,7 @@
   .hmock-est-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 15px; height: 15px; border-radius: 3px;
-    background: rgba(139,111,212,.12); color: #A088E0;
+    background: rgba(245,158,11,.12); color: #FBBF24;
     font-size: 10px; font-weight: 700;
     transition: background .12s, transform .12s;
   }

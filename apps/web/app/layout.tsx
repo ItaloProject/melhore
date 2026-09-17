@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, DM_Serif_Display } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { DeveloperCredit } from '@/components/brand/developer-credit'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const dmSerif = DM_Serif_Display({
+  weight: '400',
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-dm-serif',
+})
 
 export const metadata: Metadata = {
   title: { default: 'Melhore', template: '%s — Melhore' },
@@ -13,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={inter.variable}>
+    <html lang="pt-BR" className={`${inter.variable} ${dmSerif.variable}`}>
       <body>
         {children}
         <DeveloperCredit />

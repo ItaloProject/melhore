@@ -67,14 +67,14 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl">
 
         <div ref={headRef} style={{ opacity: 0 }} className="text-center mb-12 sm:mb-16">
-          <p className="text-xs font-semibold text-brand-400 tracking-[0.2em] uppercase mb-3">
+          <p className="text-xs font-semibold text-amber-500 tracking-[0.2em] uppercase mb-3">
             Plataforma completa
           </p>
-          <h2 className="font-bold text-white leading-tight mb-4"
+          <h2 className="font-serif font-normal text-white leading-tight mb-4"
             style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)' }}>
             Tudo que sua loja precisa
           </h2>
-          <p className="text-slate-400 max-w-lg mx-auto text-base sm:text-lg">
+          <p className="text-stone-400 max-w-lg mx-auto text-base sm:text-lg">
             De um único lugar, controle tudo — sem abrir planilha, sem duplicar informação.
           </p>
         </div>
@@ -91,7 +91,7 @@ export function FeaturesSection() {
                   <f.icon className={`w-5 h-5 ${f.iconColor}`} />
                 </div>
                 <h3 className="font-semibold text-white mb-2 text-[15px]">{f.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
+                <p className="text-sm text-stone-400 leading-relaxed">{f.desc}</p>
               </div>
             </div>
           ))}

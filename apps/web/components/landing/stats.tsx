@@ -20,7 +20,7 @@ function CountStat({ value, prefix, suffix, label }: typeof stats[0]) {
         style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
         <span ref={numRef}>0</span>
       </div>
-      <p className="text-sm sm:text-base text-slate-500">{label}</p>
+      <p className="text-sm sm:text-base text-stone-500">{label}</p>
     </div>
   )
 }

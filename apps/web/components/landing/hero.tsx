@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle, Zap } from 'lucide-react'
+import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
 import { useFadeUp } from '@/hooks/use-gsap'
 import { BrandLogo } from '@/components/brand/logo'
 
@@ -11,7 +11,7 @@ const badges = ['Sem cartão de crédito', '5 min para configurar', 'Windows, An
 const kpis = [
   { l: 'Vendas hoje',    id: 'hkv-vend', v: 'R$ 4.280', c: 'text-emerald-400' },
   { l: 'Pedidos online', id: 'hkv-onl',  v: '7 novos',  c: 'text-blue-400'   },
-  { l: 'Em estoque',     id: '',          v: '342 itens', c: 'text-violet-400' },
+  { l: 'Em estoque',     id: '',          v: '342 itens', c: 'text-amber-400' },
   { l: 'Crítico',        id: '',          v: '5 SKUs',   c: 'text-rose-400'   },
 ]
 
@@ -30,7 +30,6 @@ export function HeroSection() {
     if (!maybeFrame) return
     const frame: HTMLDivElement = maybeFrame
 
-    // ── helpers ────────────────────────────────────────────────────────────
     const cur = frame.querySelector<HTMLElement>('#hmock-cursor')!
     const navEls: Record<string, HTMLElement> = {}
     navItems.forEach((_, i) => {
@@ -68,7 +67,6 @@ export function HeroSection() {
       })
     }
 
-    // ── Sales data ─────────────────────────────────────────────────────────
     const newSales = [
       { name: 'Bermuda Bege 42',    pill: 'Físico', green: true,  price: 'R$ 119,90', cents: 11990 },
       { name: 'Regata Listrada P',  pill: 'Online', green: false, price: 'R$ 59,90',  cents: 5990  },
@@ -128,7 +126,6 @@ export function HeroSection() {
       rows[idx]?.classList.remove('hmock-row-hover')
     }
 
-    // ── Estoque adjust ──────────────────────────────────────────────────────
     const estOrig: Record<string, number> = { '1': 12, '2': 3, '3': 8, '4': 2 }
     function resetEst() {
       ;['1','2','3','4'].forEach(n => {
@@ -152,7 +149,6 @@ export function HeroSection() {
       }, 220)
     }
 
-    // ── PDV typing ─────────────────────────────────────────────────────────
     let pdvTotal = 0
     const pdvProds = [
       { name: 'Camisa Preta M', price: 89.90 },
@@ -195,7 +191,6 @@ export function HeroSection() {
       if (txt) txt.textContent = 'Buscar produto...'
     }
 
-    // ── Phases ──────────────────────────────────────────────────────────────
     function phase1() {
       setNav(0); setScreen('dash')
       const rows = frame.querySelectorAll('#hmock-rows .hmock-row')
@@ -269,30 +264,32 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[calc(100svh-64px)] flex items-center py-12 px-4 sm:px-6 overflow-hidden">
-      {/* bg glows */}
-      <div className="absolute inset-0 bg-mesh-brand opacity-70 pointer-events-none" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[min(700px,90vw)] h-80 bg-brand-700/20 rounded-full blur-3xl pointer-events-none" />
+      {/* glow quente — âmbar */}
+      <div className="absolute inset-0 bg-mesh-brand opacity-80 pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[min(560px,80vw)] h-72 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[min(400px,60vw)] h-48 bg-orange-600/8 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-10 xl:gap-16 items-center">
 
           {/* ── Left: headline + CTA ── */}
           <div ref={leftRef} style={{ opacity: 0 }} className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 text-sm text-brand-300 mb-6">
-              <Zap className="w-3.5 h-3.5 shrink-0" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-amber-500/8 px-4 py-1.5 text-sm text-amber-300/90 mb-7">
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
               Físico e digital em tempo real
             </span>
 
             <h1
-              className="font-bold leading-[1.05] tracking-tight mb-5"
-              style={{ fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)' }}
+              className="font-serif font-normal leading-[1.05] tracking-tight mb-5"
+              style={{ fontSize: 'clamp(2.6rem, 5.5vw, 4.75rem)' }}
             >
-              Gestão que
+              Gestão que{' '}
+              <em className="not-italic text-gradient">melhora</em>
               <br />
-              <span className="text-gradient">melhora</span> sua loja
+              sua loja
             </h1>
 
-            <p className="text-slate-400 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
+            <p className="text-stone-400 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
               style={{ fontSize: 'clamp(1rem, 1.8vw, 1.125rem)' }}>
               PDV, estoque, caixa e vitrine online integrados.
               Venda no balcão ou pelo celular do cliente — o mesmo estoque, um único sistema.
@@ -301,23 +298,23 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mb-8">
               <Link
                 href="/cadastro"
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-semibold text-base transition-all shadow-xl shadow-brand-900/40 w-full sm:w-auto"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-semibold text-base transition-all shadow-xl shadow-amber-900/30 w-full sm:w-auto"
               >
                 Criar minha loja
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="#download"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-white/10 hover:border-white/25 text-slate-300 hover:text-white rounded-xl font-medium text-base transition-all w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-white/10 hover:border-white/20 text-stone-300 hover:text-white rounded-xl font-medium text-base transition-all w-full sm:w-auto"
               >
                 Baixar o app
               </Link>
             </div>
 
-            <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm text-slate-500 flex-wrap">
+            <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm text-stone-500 flex-wrap">
               {badges.map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-brand-500 shrink-0" /> {t}
+                  <CheckCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" /> {t}
                 </span>
               ))}
             </div>
@@ -327,8 +324,11 @@ export function HeroSection() {
           <div ref={previewRef} style={{ opacity: 0 }} className="hidden sm:block">
             <div
               ref={frameRef}
-              className="relative rounded-2xl border border-white/8 overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.55)] bg-surface-800"
+              className="relative rounded-2xl border border-white/[0.07] overflow-hidden shadow-[0_28px_70px_rgba(0,0,0,0.65)] bg-surface-800"
             >
+              {/* ambient glow behind frame */}
+              <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-amber-500/10 via-transparent to-transparent pointer-events-none" />
+
               {/* cursor */}
               <div id="hmock-cursor" className="hmock-cursor" style={{ left: '170px', top: '90px' }} />
 
@@ -337,7 +337,7 @@ export function HeroSection() {
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500/60" />
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
-                <div className="mx-auto px-3 py-0.5 rounded bg-white/5 text-[11px] text-slate-600 truncate max-w-[220px]">
+                <div className="mx-auto px-3 py-0.5 rounded bg-white/5 text-[11px] text-stone-600 truncate max-w-[220px]">
                   app.melhore.com.br/admin
                 </div>
               </div>
@@ -355,17 +355,17 @@ export function HeroSection() {
                       key={item}
                       data-nav={i}
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] transition-colors ${
-                        i === 0 ? 'hmock-nav-active bg-brand-600/20 text-brand-300' : 'text-slate-500'
+                        i === 0 ? 'hmock-nav-active' : 'text-stone-500'
                       }`}
                     >
-                      <div className={`hmock-nav-dot w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? 'bg-brand-400' : 'bg-white/10'}`} />
+                      <div className={`hmock-nav-dot w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? 'bg-amber-400' : 'bg-white/10'}`} />
                       {item}
                     </div>
                   ))}
                 </div>
 
                 {/* ── DASHBOARD ── */}
-                <div data-screen="dash" className="flex-1 p-3 sm:p-4 flex flex-col gap-3 bg-slate-50/[0.02] overflow-hidden">
+                <div data-screen="dash" className="flex-1 p-3 sm:p-4 flex flex-col gap-3 overflow-hidden">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {kpis.map((s) => (
                       <div
@@ -373,13 +373,13 @@ export function HeroSection() {
                         id={s.id === 'hkv-onl' ? 'hmock-kpi-onl' : undefined}
                         className="relative rounded-xl bg-white/[0.04] border border-white/5 p-2.5"
                       >
-                        <p className="text-[9px] text-slate-500 mb-1 uppercase tracking-wider leading-tight">{s.l}</p>
+                        <p className="text-[9px] text-stone-500 mb-1 uppercase tracking-wider leading-tight">{s.l}</p>
                         <p id={s.id || undefined} className={`text-sm font-bold ${s.c}`}>{s.v}</p>
                       </div>
                     ))}
                   </div>
                   <div className="flex-1 rounded-xl bg-white/[0.04] border border-white/5 overflow-hidden">
-                    <p className="text-[9px] text-slate-500 uppercase tracking-wider px-3 pt-2.5 pb-1.5">Vendas Recentes</p>
+                    <p className="text-[9px] text-stone-500 uppercase tracking-wider px-3 pt-2.5 pb-1.5">Vendas Recentes</p>
                     <div id="hmock-rows">
                       <div className="hmock-row"><span className="hmock-cell hmock-name">Camisa Preta M</span><span className="hmock-cell"><span className="hmock-pill hmock-pill-green">Físico</span></span><span className="hmock-cell hmock-price">R$ 89,90</span></div>
                       <div className="hmock-row"><span className="hmock-cell hmock-name">Calça Jeans 40</span><span className="hmock-cell"><span className="hmock-pill hmock-pill-blue">Online</span></span><span className="hmock-cell hmock-price">R$ 189,90</span></div>
@@ -390,13 +390,13 @@ export function HeroSection() {
                 </div>
 
                 {/* ── ESTOQUE ── */}
-                <div data-screen="est" className="flex-1 p-3 sm:p-4 flex-col gap-3 bg-slate-50/[0.02] overflow-hidden" style={{ display: 'none' }}>
+                <div data-screen="est" className="flex-1 p-3 sm:p-4 flex-col gap-3 overflow-hidden" style={{ display: 'none' }}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold text-white">Controle de Estoque</span>
-                    <span className="text-[9px] bg-violet-500/15 text-violet-300 border border-violet-500/25 rounded px-1.5 py-0.5">5 críticos</span>
+                    <span className="text-[9px] bg-amber-500/15 text-amber-300 border border-amber-500/25 rounded px-1.5 py-0.5">5 críticos</span>
                   </div>
                   <div className="flex-1 rounded-xl bg-white/[0.04] border border-white/5 overflow-hidden">
-                    <div className="grid text-[9px] text-slate-500 uppercase tracking-wider px-2.5 py-1.5 border-b border-white/5" style={{ gridTemplateColumns: '1fr 30px 26px 20px' }}>
+                    <div className="grid text-[9px] text-stone-500 uppercase tracking-wider px-2.5 py-1.5 border-b border-white/5" style={{ gridTemplateColumns: '1fr 30px 26px 20px' }}>
                       <span>Produto</span><span>Tam.</span><span>Qtd</span><span></span>
                     </div>
                     <div className="hmock-est-row"><span className="hmock-cell hmock-name">Camisa Preta</span><span className="hmock-cell">M</span><span className="hmock-est-qty" id="heq1">12</span><span className="hmock-cell"><span className="hmock-est-btn" id="heb1">+</span></span></div>
@@ -407,22 +407,19 @@ export function HeroSection() {
                 </div>
 
                 {/* ── PDV ── */}
-                <div data-screen="pdv" className="flex-1 p-3 sm:p-4 flex-col gap-3 bg-slate-50/[0.02] overflow-hidden" style={{ display: 'none' }}>
+                <div data-screen="pdv" className="flex-1 p-3 sm:p-4 flex-col gap-3 overflow-hidden" style={{ display: 'none' }}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold text-white">Nova Venda</span>
                     <span className="text-[9px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 rounded px-1.5 py-0.5">Caixa aberto</span>
                   </div>
-                  {/* search */}
                   <div id="hmock-pdvsearch" className="flex items-center gap-1.5 bg-white/[0.04] border border-white/8 rounded-lg px-2.5 py-1.5">
-                    <svg className="w-2.5 h-2.5 text-slate-600 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="7" cy="7" r="4"/><path d="M12 12l-2-2"/></svg>
-                    <span className="text-[10px] text-slate-500" id="hmock-pdvtxt">Buscar produto...</span>
+                    <svg className="w-2.5 h-2.5 text-stone-600 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="7" cy="7" r="4"/><path d="M12 12l-2-2"/></svg>
+                    <span className="text-[10px] text-stone-500" id="hmock-pdvtxt">Buscar produto...</span>
                     <span className="hmock-pdvcaret" id="hmock-pdvcaret" style={{ display: 'none' }} />
                   </div>
-                  {/* cart */}
                   <div id="hmock-pdvcart" className="flex-1 flex flex-col gap-1" />
-                  {/* total */}
                   <div className="flex items-center justify-between border-t border-white/5 pt-2">
-                    <span className="text-[9px] text-slate-500 tracking-widest">TOTAL</span>
+                    <span className="text-[9px] text-stone-500 tracking-widest">TOTAL</span>
                     <span className="text-sm font-bold text-emerald-400 font-mono" id="hmock-pdvtotal">R$ 0,00</span>
                   </div>
                 </div>
