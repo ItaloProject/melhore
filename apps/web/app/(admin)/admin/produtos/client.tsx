@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { Search, Edit2, Trash2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,6 +9,8 @@ import { Card } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
+import { Pagination } from '@/components/admin/pagination'
 
 interface Product {
   id: string
@@ -21,13 +22,23 @@ interface Product {
   active: boolean
 }
 
-export function ProdutosClient({ products, storeId }: { products: Product[]; storeId: string }) {
+export function ProdutosClient({
+  products,
+  storeId,
+  total,
+  page,
+  pageSize,
+  initialQuery,
+}: {
+  products: Product[]
+  storeId: string
+  total: number
+  page: number
+  pageSize: number
+  initialQuery: string
+}) {
   const router = useRouter()
-  const [search, setSearch] = useState('')
-
-  const filtered = products.filter((p) =>
-    `${p.name} ${p.category}`.toLowerCase().includes(search.toLowerCase())
-  )
+  const [search, setSearch] = useDebouncedSearch(initialQuery)
 
   const toggleActive = async (id: string, current: boolean) => {
     const supabase = createClient()
@@ -64,10 +75,10 @@ export function ProdutosClient({ products, storeId }: { products: Product[]; sto
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && (
+            {products.length === 0 && (
               <tr><td colSpan={7} className="py-12 text-center text-sm text-gray-400">Nenhum produto encontrado</td></tr>
             )}
-            {filtered.map((p) => (
+            {products.map((p) => (
               <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
@@ -108,6 +119,8 @@ export function ProdutosClient({ products, storeId }: { products: Product[]; sto
           </tbody>
         </table>
       </div>
+
+      <Pagination page={page} pageSize={pageSize} total={total} />
     </Card>
   )
 }

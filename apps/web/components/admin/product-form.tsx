@@ -55,6 +55,7 @@ export function ProductForm({ storeId, initial }: { storeId: string; initial?: P
         }))
       : [emptyVariant()]
   )
+  const [deletedVariantIds, setDeletedVariantIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -63,7 +64,12 @@ export function ProductForm({ storeId, initial }: { storeId: string; initial?: P
   }
 
   const removeVariant = (key: string) => {
-    setVariants((prev) => (prev.length > 1 ? prev.filter((v) => v.key !== key) : prev))
+    setVariants((prev) => {
+      if (prev.length <= 1) return prev
+      const target = prev.find((v) => v.key === key)
+      if (target?.id) setDeletedVariantIds((ids) => [...ids, target.id!])
+      return prev.filter((v) => v.key !== key)
+    })
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +120,7 @@ export function ProductForm({ storeId, initial }: { storeId: string; initial?: P
         quantity: Number(v.quantity) || 0,
         minQuantity: Number(v.minQuantity) || 3,
       })),
+      deletedVariantIds,
     })
 
     setSaving(false)
@@ -121,7 +128,11 @@ export function ProductForm({ storeId, initial }: { storeId: string; initial?: P
       setError(result.error)
       return
     }
-    toast.success(initial ? 'Produto atualizado!' : 'Produto criado!')
+    if (result.skippedDeletions && result.skippedDeletions.length > 0) {
+      toast.warning(`Não foi possível excluir: ${result.skippedDeletions.join(', ')} (já tem vendas/pedidos registrados)`)
+    } else {
+      toast.success(initial ? 'Produto atualizado!' : 'Produto criado!')
+    }
     router.push('/admin/produtos')
     router.refresh()
   }
@@ -226,7 +237,7 @@ export function ProductForm({ storeId, initial }: { storeId: string; initial?: P
                 className="text-red-500 hover:bg-red-50"
                 onClick={() => removeVariant(v.key)}
                 disabled={variants.length === 1}
-                title={v.id ? 'Variações salvas não podem ser removidas por aqui' : 'Remover'}
+                title="Remover variação"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>

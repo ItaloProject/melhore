@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Search, ArrowUp, ArrowDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
+import { Pagination } from '@/components/admin/pagination'
 
 interface InventoryItem {
   id: string
@@ -27,13 +28,23 @@ function stockStatus(qty: number, reserved: number, min: number) {
   return { label: 'Normal',      variant: 'success' as const }
 }
 
-export function EstoqueClient({ inventory, storeId }: { inventory: InventoryItem[]; storeId: string }) {
+export function EstoqueClient({
+  inventory,
+  storeId,
+  total,
+  page,
+  pageSize,
+  initialQuery,
+}: {
+  inventory: InventoryItem[]
+  storeId: string
+  total: number
+  page: number
+  pageSize: number
+  initialQuery: string
+}) {
   const router = useRouter()
-  const [search, setSearch] = useState('')
-
-  const filtered = inventory.filter((i) =>
-    `${i.product} ${i.size} ${i.color}`.toLowerCase().includes(search.toLowerCase())
-  )
+  const [search, setSearch] = useDebouncedSearch(initialQuery)
 
   const adjust = async (id: string, variantId: string, currentQty: number, delta: number) => {
     const newQty = Math.max(0, currentQty + delta)
@@ -75,10 +86,10 @@ export function EstoqueClient({ inventory, storeId }: { inventory: InventoryItem
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && (
+            {inventory.length === 0 && (
               <tr><td colSpan={8} className="py-12 text-center text-sm text-gray-400">Nenhum item encontrado</td></tr>
             )}
-            {filtered.map((item) => {
+            {inventory.map((item) => {
               const available = item.qty - item.reserved
               const { label, variant } = stockStatus(item.qty, item.reserved, item.min)
               return (
@@ -108,6 +119,8 @@ export function EstoqueClient({ inventory, storeId }: { inventory: InventoryItem
           </tbody>
         </table>
       </div>
+
+      <Pagination page={page} pageSize={pageSize} total={total} />
     </Card>
   )
 }

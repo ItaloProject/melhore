@@ -1,30 +1,38 @@
 import Link from 'next/link'
-import { Plus, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { formatCurrency } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { requireStore } from '@/lib/queries/store'
 import { ProdutosClient } from './client'
 
-async function getProducts(storeId: string) {
+const PAGE_SIZE = 20
+
+async function getProducts(storeId: string, page: number, q: string) {
   const supabase = createClient()
-  const { data } = await supabase
+  const from = (page - 1) * PAGE_SIZE
+  const to = from + PAGE_SIZE - 1
+
+  let query = supabase
     .from('products')
-    .select(`
+    .select(
+      `
       id, name, price, active,
       categories(name),
       product_variants(
         id,
         inventory(quantity, reserved)
       )
-    `)
+    `,
+      { count: 'exact' }
+    )
     .eq('store_id', storeId)
-    .order('created_at', { ascending: false })
+
+  if (q) query = query.ilike('name', `%${q}%`)
+
+  const { data, count } = await query.order('created_at', { ascending: false }).range(from, to)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data ?? []).map((p: any) => {
+  const products = (data ?? []).map((p: any) => {
     const variants = p.product_variants ?? []
     const stock = variants.reduce((s: number, v: any) => {
       const inv = v.inventory?.[0]
@@ -40,18 +48,26 @@ async function getProducts(storeId: string) {
       active: p.active,
     }
   })
+
+  return { products, total: count ?? 0 }
 }
 
-export default async function ProdutosPage() {
+export default async function ProdutosPage({
+  searchParams,
+}: {
+  searchParams: { page?: string; q?: string }
+}) {
   const { storeId } = await requireStore()
-  const products = await getProducts(storeId)
+  const page = Math.max(1, Number(searchParams.page) || 1)
+  const q = searchParams.q ?? ''
+  const { products, total } = await getProducts(storeId, page, q)
 
   return (
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Produtos</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{products.length} produto{products.length !== 1 ? 's' : ''} cadastrado{products.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-gray-500 mt-0.5">{total} produto{total !== 1 ? 's' : ''} cadastrado{total !== 1 ? 's' : ''}</p>
         </div>
         <Link href="/admin/produtos/novo">
           <Button variant="primary">
@@ -60,7 +76,7 @@ export default async function ProdutosPage() {
         </Link>
       </div>
 
-      <ProdutosClient products={products} storeId={storeId} />
+      <ProdutosClient products={products} storeId={storeId} total={total} page={page} pageSize={PAGE_SIZE} initialQuery={q} />
     </div>
   )
 }

@@ -24,6 +24,7 @@ export interface SaveProductInput {
   images: string[]
   active: boolean
   variants: ProductVariantInput[]
+  deletedVariantIds?: string[]
 }
 
 export async function saveProduct(input: SaveProductInput) {
@@ -51,10 +52,12 @@ export async function saveProduct(input: SaveProductInput) {
       quantity: v.quantity,
       min_quantity: v.minQuantity,
     })),
+    p_deleted_variant_ids: input.deletedVariantIds ?? [],
   })
 
   if (error) return { error: error.message }
 
+  const result = data as { product_id: string; skipped_deletions: string[] }
   revalidatePath('/admin/produtos')
-  return { ok: true, productId: data as string }
+  return { ok: true, productId: result.product_id, skippedDeletions: result.skipped_deletions ?? [] }
 }
